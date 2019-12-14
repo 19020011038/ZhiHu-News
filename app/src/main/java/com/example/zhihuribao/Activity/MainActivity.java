@@ -56,7 +56,10 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     private ViewPager mViewPager;
     private RecyclerView recyclerView;
     private String Today;
-//    private String Flag = "0";
+    private String Yesterday;
+    private int Flag = 0;
+    private String url_1;
+    private String url_2;
 
 
     private static final String TAG = "MainActivity";
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         if (actionBar != null) {
             actionBar.hide();
         }
+        url_1 = "http://news.at.zhihu.com/api/1.2/stories/before/";
         t = 0;
         Today = getOldDate(t);
         Log.d("yyxnb",Today);
@@ -353,26 +357,121 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
 
                 list.add(map);
             }
+            Flag = 1;
 
             runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void run() {
+                    //绑定轮播适配器
                     Log.e("size",String.valueOf(sPics.size()));
                     mLooperPagerAdapter.setData(sPics);
                     mLoopPager.setAdapter(mLooperPagerAdapter);
                     insertPoint();
+                    //开启线程获得下一天的数据
+                    if(Flag == 1){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HttpURLConnection connection = null;
+                                BufferedReader reader = null;
+                                try {
+                                    url_2 = url_1 + Today;
+                                    URL url = new URL(url_2);
+                                    connection = (HttpURLConnection) url.openConnection();
+                                    connection.setRequestMethod("GET");
+                                    connection.setConnectTimeout(8000);
+                                    connection.setReadTimeout(8000);
+                                    InputStream in = connection.getInputStream();
+                                    //读取刚刚获取的输入流
+                                    reader = new BufferedReader(new InputStreamReader(in));
+                                    StringBuilder response = new StringBuilder();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        response.append(line);
+                                    }
+                                    showResponse2(response.toString());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (reader != null) {
+                                        try {
+                                            reader.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                }
+                            }
+                        }).start();
+                    }
+//                    //接受数据
+//                    Intent intent1 = getIntent();
+//                    String id = intent1.getStringExtra("id_user");
+//                    //绑定适配器
+//                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));//垂直排列 , Ctrl+P
+//                    recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id));//绑定适配器
+
+//                    //下拉加载
+//                    refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+//                        @Override
+//                        public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+//
+//                            refreshLayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+//                        }
+//                    });
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showResponse2(final String string) {
+        Map map1 = new HashMap();
+        map1.put("type", 3);
+        list.add(map1);
+        try {
+            JSONObject jsonObject = new JSONObject(string);
+            JSONArray jsonArray = jsonObject.getJSONArray("news");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                String title = jsonObject1.getString("title");
+                String hint = jsonObject1.getString("hint");
+                String image = jsonObject1.getString("image");
+                String id_news = jsonObject1.getString("id");
+
+
+                Map map = new HashMap();
+
+                map.put("title", title);
+                map.put("hint", hint);
+                map.put("image", image);
+                map.put("id_news", id_news);
+                map.put("type", 1);
+
+
+                list.add(map);
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //接受数据
                     Intent intent1 = getIntent();
                     String id = intent1.getStringExtra("id_user");
                     //绑定适配器
+                    t = t - 1;
+                    //t是-1，代表昨天的日期
+                    Yesterday = getOldDate2(t);
                     recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));//垂直排列 , Ctrl+P
-                    recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id));//绑定适配器
-
+                    recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id,Yesterday));//绑定适配器
                     //下拉加载
                     refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
                         @Override
                         public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-
+                            
                             refreshLayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
                         }
                     });
@@ -381,10 +480,26 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public static String getOldDate(int distanceDay) {
         SimpleDateFormat dft = new SimpleDateFormat("yyyyMMdd");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + distanceDay);
+        Date endDate = null;
+        try {
+            endDate = dft.parse(dft.format(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dft.format(endDate);
+    }
+    public static String getOldDate2(int distanceDay) {
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy年MM月dd日");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);

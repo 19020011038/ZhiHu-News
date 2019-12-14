@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zhihuribao.Adapter.CommentsAdapter;
-import com.example.zhihuribao.Adapter.MainAdapter;
 import com.example.zhihuribao.R;
 
 import org.json.JSONArray;
@@ -137,11 +135,11 @@ public class CommentsActivity extends AppCompatActivity {
                 }
             }).start();
         }
-        //如果长评是0
+        //如果长评不是0
         else {
             //联网获取长评
             new Thread(new Runnable() {
-                @Override
+              @Override
                 public void run() {
                     HttpURLConnection connection = null;
                     BufferedReader reader = null;

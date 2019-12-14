@@ -26,21 +26,26 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Map<String, Object>> list;
     private String id_user;
+    private String Yesterday;
     public Context context;
     public final int CAROUSEL_VIEW = 2;
     public final int ITEM_VIEW = 1;
+    public final int DATE_VIEW = 3;
 
-    public MainAdapter(Context context, List<Map<String, Object>> list, String id_user) {
+    public MainAdapter(Context context, List<Map<String, Object>> list, String id_user, String Yesterdat) {
         this.context = context;
         this.list = list;
         this.id_user = id_user;
+        this.Yesterday = Yesterdat;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (Integer.valueOf(list.get(position).get("type").toString())== CAROUSEL_VIEW)
+        if (Integer.valueOf(list.get(position).get("type").toString()) == CAROUSEL_VIEW)
             return CAROUSEL_VIEW;
-        else
+        else if (Integer.valueOf(list.get(position).get("type").toString()) == DATE_VIEW) {
+            return DATE_VIEW;
+        } else
             return ITEM_VIEW;
     }
 
@@ -48,7 +53,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if (viewType == CAROUSEL_VIEW) {
+        if (viewType == DATE_VIEW) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date, parent, false);
+            return new DateViewHolder(view);
+        } else if (viewType == CAROUSEL_VIEW) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.carousel, parent, false);
             return new CarouselViewHolder(view);
         } else {
@@ -59,7 +67,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof CarouselViewHolder) {
+        if (holder instanceof DateViewHolder) {
+            DateViewHolder viewHolder = (DateViewHolder) holder;
+            viewHolder.show_date.setText(Yesterday);
+        } else if (holder instanceof CarouselViewHolder) {
 //            CarouselViewHolder viewHolder = (CarouselViewHolder) holder;
 //            viewHolder.carousel.setImageResource(R.drawable.shoucang2);
 //            viewHolder.carousel.invalidate();
@@ -82,8 +93,8 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     bundle.putString("url_news", url_news);
                     intent.putExtras(bundle);
                     context.startActivity(intent);
-                    if(MainActivity.class.isInstance(context)){
-                        MainActivity activity = (MainActivity)context;
+                    if (MainActivity.class.isInstance(context)) {
+                        MainActivity activity = (MainActivity) context;
                         activity.finish();
                     }
                 }
@@ -95,6 +106,15 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return list.size();
+    }
+}
+
+class DateViewHolder extends RecyclerView.ViewHolder {
+    public TextView show_date;
+
+    DateViewHolder(@NonNull View itemView) {
+        super(itemView);
+        show_date = itemView.findViewById(R.id.date);
     }
 }
 
