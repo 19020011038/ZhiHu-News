@@ -26,17 +26,17 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Map<String, Object>> list;
     private String id_user;
-    private String Yesterday;
+
     public Context context;
     public final int CAROUSEL_VIEW = 2;
     public final int ITEM_VIEW = 1;
     public final int DATE_VIEW = 3;
 
-    public MainAdapter(Context context, List<Map<String, Object>> list, String id_user, String Yesterdat) {
+    public MainAdapter(Context context, List<Map<String, Object>> list, String id_user) {
         this.context = context;
         this.list = list;
         this.id_user = id_user;
-        this.Yesterday = Yesterdat;
+
     }
 
     @Override
@@ -69,7 +69,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof DateViewHolder) {
             DateViewHolder viewHolder = (DateViewHolder) holder;
-            viewHolder.show_date.setText(Yesterday);
+            viewHolder.show_date.setText(list.get(position).get("date").toString());
         } else if (holder instanceof CarouselViewHolder) {
 //            CarouselViewHolder viewHolder = (CarouselViewHolder) holder;
 //            viewHolder.carousel.setImageResource(R.drawable.shoucang2);

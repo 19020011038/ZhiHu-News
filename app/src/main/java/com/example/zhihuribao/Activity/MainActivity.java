@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     private RecyclerView recyclerView;
     private String Today;
     private String Yesterday;
+    private String Yesterday_1;
     private int Flag = 0;
     private String url_1;
     private String url_2;
@@ -429,8 +430,12 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     }
 
     public void showResponse2(final String string) {
+        t = t - 1;
+        //  t == -1
+        Yesterday_1 = getOldDate2(t);
         Map map1 = new HashMap();
         map1.put("type", 3);
+        map1.put("date",Yesterday_1);
         list.add(map1);
         try {
             JSONObject jsonObject = new JSONObject(string);
@@ -462,16 +467,49 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                     Intent intent1 = getIntent();
                     String id = intent1.getStringExtra("id_user");
                     //绑定适配器
-                    t = t - 1;
-                    //t是-1，代表昨天的日期
-                    Yesterday = getOldDate2(t);
+                    Yesterday = getOldDate(t);
                     recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));//垂直排列 , Ctrl+P
-                    recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id,Yesterday));//绑定适配器
+                    recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id));//绑定适配器
                     //下拉加载
                     refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
                         @Override
                         public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                            
+                            //开一个线程来加载前一天的数据
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HttpURLConnection connection = null;
+                                    BufferedReader reader = null;
+                                    try {
+                                        url_2 = url_1 + Yesterday;
+                                        URL url = new URL(url_2);
+                                        connection = (HttpURLConnection) url.openConnection();
+                                        connection.setRequestMethod("GET");
+                                        connection.setConnectTimeout(8000);
+                                        connection.setReadTimeout(8000);
+                                        InputStream in = connection.getInputStream();
+                                        //读取刚刚获取的输入流
+                                        reader = new BufferedReader(new InputStreamReader(in));
+                                        StringBuilder response = new StringBuilder();
+                                        String line;
+                                        while ((line = reader.readLine()) != null) {
+                                            response.append(line);
+                                        }
+                                        showResponse2(response.toString());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (reader != null) {
+                                            try {
+                                                reader.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }).start();
                             refreshLayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
                         }
                     });
