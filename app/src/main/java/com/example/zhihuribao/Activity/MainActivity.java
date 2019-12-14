@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
 //            }
             }
         }
+        RefreshFlag = 1;
     }
 
     @Override

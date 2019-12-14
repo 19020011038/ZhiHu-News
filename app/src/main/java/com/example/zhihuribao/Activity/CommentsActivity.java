@@ -26,7 +26,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +141,7 @@ public class CommentsActivity extends AppCompatActivity {
         else {
             //联网获取长评
             new Thread(new Runnable() {
-              @Override
+                @Override
                 public void run() {
                     HttpURLConnection connection = null;
                     BufferedReader reader = null;
@@ -194,6 +196,9 @@ public class CommentsActivity extends AppCompatActivity {
                     String content = jsonObject1.getString("content");
                     String avatar = jsonObject1.getString("avatar");
                     String time = jsonObject1.getString("time");
+                    String time_1 = YearMon(time);
+                    String time_2 = Hourmin(time);
+                    String realTime = time_1 + time_2;
                     String likes = jsonObject1.getString("likes");
 //                    JSONObject reply_to = jsonObject1.getJSONObject("reply_to");
 //                    String reply_to_content = reply_to.getString("content");
@@ -204,7 +209,7 @@ public class CommentsActivity extends AppCompatActivity {
                     map.put("author", author);
                     map.put("content", content);
                     map.put("avatar", avatar);
-                    map.put("time", time);
+                    map.put("time", realTime);
                     map.put("likes", likes);
 //                    map.put("reply_to_content", reply_to_content);
 //                    map.put("reply_to_author", reply_to_author);
@@ -284,6 +289,9 @@ public class CommentsActivity extends AppCompatActivity {
                 String content = jsonObject1.getString("content");
                 String avatar = jsonObject1.getString("avatar");
                 String time = jsonObject1.getString("time");
+                String time_1 = YearMon(time);
+                String time_2 = Hourmin(time);
+                String realTime = time_1 + time_2;
                 String likes = jsonObject1.getString("likes");
 //                JSONObject reply_to = jsonObject1.getJSONObject("reply_to");
 //                String reply_to_content = reply_to.getString("content");
@@ -294,7 +302,7 @@ public class CommentsActivity extends AppCompatActivity {
                 map.put("author", author);
                 map.put("content", content);
                 map.put("avatar", avatar);
-                map.put("time", time);
+                map.put("time", realTime);
                 map.put("likes", likes);
 //                map.put("reply_to_content", reply_to_content);
 //                map.put("reply_to_author", reply_to_author);
@@ -317,4 +325,28 @@ public class CommentsActivity extends AppCompatActivity {
 
 
     }
+
+    /*
+     * 将时间戳转换为时间
+     */
+    //十位时间戳字符串转年月
+    public static String YearMon(String time) {
+        SimpleDateFormat sdr = new SimpleDateFormat("MM月dd日");
+        @SuppressWarnings("unused")
+        long lcc = Long.valueOf(time);
+        int i = Integer.parseInt(time);
+        String times = sdr.format(new Date(i * 1000L));
+        return times;
+    }
+
+    public static String Hourmin(String time) {
+        SimpleDateFormat sdr = new SimpleDateFormat("HH:mm");
+        @SuppressWarnings("unused")
+        long lcc = Long.valueOf(time);
+        int i = Integer.parseInt(time);
+        String times = sdr.format(new Date(i * 1000L));
+        return times;
+    }
+
+
 }
