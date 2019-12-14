@@ -29,6 +29,7 @@ import com.example.zhihuribao.MyDataBaseHelper;
 import com.example.zhihuribao.R;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     private String Yesterday;
     private String Yesterday_1;
     private int Flag = 0;
+    private int RefreshFlag = 0;
     private String url_1;
     private String url_2;
 
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         url_1 = "http://news.at.zhihu.com/api/1.2/stories/before/";
         t = 0;
         Today = getOldDate(t);
-        Log.d("yyxnb",Today);
+        Log.d("yyxnb", Today);
         mHandler = new Handler();
 //        initView();
         //就是找到这个viewPager控件
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         mPointContainer = (LinearLayout) this.findViewById(R.id.points_container);
         //根据图片的个数,去添加点的个数
 //        insertPoint();
-
 
 
         recyclerView = findViewById(R.id.recyclerView_main);
@@ -149,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                 finish();
             }
         });
-
 
 
     }
@@ -200,34 +200,34 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     @Override
     public void onAttachedToWindow() {
         //if (Flag.equals("1")) {
-            super.onAttachedToWindow();
-            //当我这个界面绑定到窗口的时候
+        super.onAttachedToWindow();
+        //当我这个界面绑定到窗口的时候
 //        if (sPics.size() != 0)
-            mHandler.post(mLooperTask);
+        mHandler.post(mLooperTask);
         //}
     }
 
     @Override
     public void onDetachedFromWindow() {
         //if (Flag.equals("1")) {
-            super.onDetachedFromWindow();
-            Log.d(TAG, "onDetachedFromWindow");
+        super.onDetachedFromWindow();
+        Log.d(TAG, "onDetachedFromWindow");
 //            if (sPics.size()!=0)
-            mHandler.removeCallbacks(mLooperTask);
-       // }
+        mHandler.removeCallbacks(mLooperTask);
+        // }
     }
 
     private Runnable mLooperTask = new Runnable() {
         @Override
         public void run() {
             //if (Flag.equals("1")) {
-                if (!mIsTouch) {
-                    //切换viewPager里的图片到下一个
-                    int currentItem = mLoopPager.getCurrentItem();
-                    mLoopPager.setCurrentItem(++currentItem, true);
-                }
-                mHandler.postDelayed(this, 3000);
-           // }
+            if (!mIsTouch) {
+                //切换viewPager里的图片到下一个
+                int currentItem = mLoopPager.getCurrentItem();
+                mLoopPager.setCurrentItem(++currentItem, true);
+            }
+            mHandler.postDelayed(this, 3000);
+            // }
         }
     };
 
@@ -235,23 +235,24 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void initView() {
 //        if (Flag.equals("1")) {
-            //就是找到这个viewPager控件
-            mLoopPager = (MyViewPager) this.findViewById(R.id.looper_pager);
-            //设置适配器
-            mLooperPagerAdapter = new LooperPagerAdapter();
-            mLooperPagerAdapter.setData(sPics);
-            mLoopPager.setAdapter(mLooperPagerAdapter);
-            mLoopPager.setOnViewPagerTouchListener(this);
-            mLoopPager.addOnPageChangeListener(this);
-            mPointContainer = (LinearLayout) this.findViewById(R.id.points_container);
-            //根据图片的个数,去添加点的个数
-            insertPoint();
+        //就是找到这个viewPager控件
+        mLoopPager = (MyViewPager) this.findViewById(R.id.looper_pager);
+        //设置适配器
+        mLooperPagerAdapter = new LooperPagerAdapter();
+        mLooperPagerAdapter.setData(sPics);
+        mLoopPager.setAdapter(mLooperPagerAdapter);
+        mLoopPager.setOnViewPagerTouchListener(this);
+        mLoopPager.addOnPageChangeListener(this);
+        mPointContainer = (LinearLayout) this.findViewById(R.id.points_container);
+        //根据图片的个数,去添加点的个数
+        insertPoint();
 //        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void insertPoint() {
 //        if (Flag.equals("1")) {
+        if (RefreshFlag == 0) {
             for (int i = 0; i < sPics.size(); i++) {
                 View point = new View(this);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(40, 40);
@@ -260,13 +261,14 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                 point.setLayoutParams(layoutParams);
                 mPointContainer.addView(point);
 //            }
+            }
         }
     }
 
     @Override
     public void onPagerTouch(boolean isTouch) {
 //        if (Flag.equals("1"))
-            mIsTouch = isTouch;
+        mIsTouch = isTouch;
     }
 
 
@@ -280,28 +282,28 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     @Override
     public void onPageSelected(int position) {
 //        if (Flag.equals("1")) {
-            //这个方法的调用,其实是viewPager停下来以后选中的位置
-            int realPosition;
-            if (mLooperPagerAdapter.getDataRealSize() != 0) {
-                realPosition = position % mLooperPagerAdapter.getDataRealSize();
-            } else {
-                realPosition = 0;
-            }
-            setSelectPoint(realPosition);
+        //这个方法的调用,其实是viewPager停下来以后选中的位置
+        int realPosition;
+        if (mLooperPagerAdapter.getDataRealSize() != 0) {
+            realPosition = position % mLooperPagerAdapter.getDataRealSize();
+        } else {
+            realPosition = 0;
+        }
+        setSelectPoint(realPosition);
 //        }
     }
 
     private void setSelectPoint(int realPosition) {
 //        if (Flag.equals("1")) {
-            for (int i = 0; i < mPointContainer.getChildCount(); i++) {
-                View point = mPointContainer.getChildAt(i);
-                if (i != realPosition) {
-                    //那就是白色
-                    point.setBackgroundResource(R.drawable.shape_point_normal);
-                } else {
-                    //选中的颜色
-                    point.setBackgroundResource(R.drawable.shape_point_selected);
-                }
+        for (int i = 0; i < mPointContainer.getChildCount(); i++) {
+            View point = mPointContainer.getChildAt(i);
+            if (i != realPosition) {
+                //那就是白色
+                point.setBackgroundResource(R.drawable.shape_point_normal);
+            } else {
+                //选中的颜色
+                point.setBackgroundResource(R.drawable.shape_point_selected);
+            }
 //            }
         }
     }
@@ -365,18 +367,20 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                 @Override
                 public void run() {
                     //绑定轮播适配器
-                    Log.e("size",String.valueOf(sPics.size()));
+                    Log.e("size", String.valueOf(sPics.size()));
                     mLooperPagerAdapter.setData(sPics);
                     mLoopPager.setAdapter(mLooperPagerAdapter);
                     insertPoint();
                     //开启线程获得下一天的数据
-                    if(Flag == 1){
+                    if (Flag == 1) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 HttpURLConnection connection = null;
                                 BufferedReader reader = null;
                                 try {
+                                    t = 0;
+                                    Today = getOldDate(t);
                                     url_2 = url_1 + Today;
                                     URL url = new URL(url_2);
                                     connection = (HttpURLConnection) url.openConnection();
@@ -435,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         Yesterday_1 = getOldDate2(t);
         Map map1 = new HashMap();
         map1.put("type", 3);
-        map1.put("date",Yesterday_1);
+        map1.put("date", Yesterday_1);
         list.add(map1);
         try {
             JSONObject jsonObject = new JSONObject(string);
@@ -468,9 +472,59 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                     String id = intent1.getStringExtra("id_user");
                     //绑定适配器
                     Yesterday = getOldDate(t);
+
+                    recyclerView.setHasFixedSize(true);
+
+                    recyclerView.setNestedScrollingEnabled(false);
+
                     recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));//垂直排列 , Ctrl+P
                     recyclerView.setAdapter(new MainAdapter(MainActivity.this, list, id));//绑定适配器
-                    //下拉加载
+                    //下拉刷新
+                    refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+                        @Override
+                        public void onRefresh(RefreshLayout refreshlayout) {
+                            RefreshFlag = 1;
+//                            sPics.clear();
+                            list.clear();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HttpURLConnection connection = null;
+                                    BufferedReader reader = null;
+                                    try {
+                                        URL url = new URL("https://news-at.zhihu.com/api/3/stories/latest");
+                                        connection = (HttpURLConnection) url.openConnection();
+                                        connection.setRequestMethod("GET");
+                                        connection.setConnectTimeout(8000);
+                                        connection.setReadTimeout(8000);
+                                        InputStream in = connection.getInputStream();
+                                        //读取刚刚获取的输入流
+                                        reader = new BufferedReader(new InputStreamReader(in));
+                                        StringBuilder response = new StringBuilder();
+                                        String line;
+                                        while ((line = reader.readLine()) != null) {
+                                            response.append(line);
+                                        }
+                                        showResponse(response.toString());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (reader != null) {
+                                            try {
+                                                reader.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }).start();
+                            refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
+                        }
+                    });
+
+                    //上拉加载
                     refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
                         @Override
                         public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
@@ -536,6 +590,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         }
         return dft.format(endDate);
     }
+
     public static String getOldDate2(int distanceDay) {
         SimpleDateFormat dft = new SimpleDateFormat("yyyy年MM月dd日");
         Date beginDate = new Date();
