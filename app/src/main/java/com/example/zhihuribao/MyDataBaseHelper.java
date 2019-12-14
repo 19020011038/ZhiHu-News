@@ -10,7 +10,7 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     public MyDataBaseHelper(@Nullable Context context) {
         //下面这个"database"是数据库的名字,version是版本号
-        super(context, "database", null, 26);
+        super(context, "database", null, 27);
     }
 
     @Override

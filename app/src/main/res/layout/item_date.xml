@@ -6,6 +6,7 @@
         android:id="@+id/date"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:layout_height="30dp"
         android:text="20191214"/>
     <LinearLayout

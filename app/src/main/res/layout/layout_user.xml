@@ -66,7 +66,7 @@
             android:textColor="#000000"
             android:textSize="20sp"
             android:text="    我的收藏"
-            android:drawableRight="@drawable/right2"
+            android:drawableRight="@drawable/right4"
             android:gravity=""/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -88,7 +88,7 @@
             android:layout_weight="0.7"
             android:text="    修改用户名"
             android:textSize="20sp"
-            android:drawableRight="@drawable/right2"
+            android:drawableRight="@drawable/right4"
             android:textColor="#000000"
             android:gravity=""/>
         <LinearLayout
@@ -112,7 +112,7 @@
             android:text="    修改密码"
             android:textSize="20sp"
             android:textColor="#000000"
-            android:drawableRight="@drawable/right2"
+            android:drawableRight="@drawable/right4"
             android:gravity=""/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -135,7 +135,7 @@
             android:text="    修改头像"
             android:textSize="20sp"
             android:textColor="#000000"
-            android:drawableRight="@drawable/right2"
+            android:drawableRight="@drawable/right4"
             android:gravity=""/>
         <LinearLayout
             android:layout_width="match_parent"

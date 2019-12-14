@@ -1,10 +1,15 @@
 package com.example.zhihuribao.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,11 +34,12 @@ public class RegisterActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
+        fullScreen(RegisterActivity.this);
         mText_number = findViewById(R.id.get_tel);
         mText_name = findViewById(R.id.get_name);
         mText_password = findViewById(R.id.get_password);
 
-        ImageView imageView = (ImageView)findViewById(R.id.back_register_login);
+        ImageView imageView = (ImageView) findViewById(R.id.back_register_login);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,19 +50,27 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
 
-        Button button2 = (Button)findViewById(R.id.register);
+        Button button2 = (Button) findViewById(R.id.register);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if("".equals(mText_number.getText().toString()))
-                    Toast.makeText(RegisterActivity.this,"输入手机号不能为空！",Toast.LENGTH_SHORT).show();
-                else
-                if("".equals(mText_name.getText().toString()))
-                    Toast.makeText(RegisterActivity.this,"输入用户名不能为空！",Toast.LENGTH_SHORT).show();
-                else
-                if("".equals(mText_password.getText().toString()))
-                    Toast.makeText(RegisterActivity.this,"输入密码不能为空！",Toast.LENGTH_SHORT).show();
-                else{
+                if ("".equals(mText_number.getText().toString()))
+                    Toast.makeText(RegisterActivity.this, "输入手机号不能为空！", Toast.LENGTH_SHORT).show();
+                else if (mText_number.length() != 11)
+                    Toast.makeText(RegisterActivity.this, "请您输入正确的11位手机号！", Toast.LENGTH_SHORT).show();
+                else if (mText_name.length() > 10)
+                    Toast.makeText(RegisterActivity.this, "用户名长度不能超过10个字符！", Toast.LENGTH_SHORT).show();
+                else if (mText_name.length() < 5)
+                    Toast.makeText(RegisterActivity.this, "用户名长度不能小于5个字符！", Toast.LENGTH_SHORT).show();
+                else if ("".equals(mText_name.getText().toString()))
+                    Toast.makeText(RegisterActivity.this, "输入用户名不能为空！", Toast.LENGTH_SHORT).show();
+                else if ("".equals(mText_password.getText().toString()))
+                    Toast.makeText(RegisterActivity.this, "输入密码不能为空！", Toast.LENGTH_SHORT).show();
+                else if (mText_password.length() < 6)
+                    Toast.makeText(RegisterActivity.this, "密码长度不小于6个字符！", Toast.LENGTH_SHORT).show();
+                else if (mText_password.length() > 11)
+                    Toast.makeText(RegisterActivity.this, "密码长度不超过11个字符！", Toast.LENGTH_SHORT).show();
+                else {
                     MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(RegisterActivity.this);
                     SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
 
@@ -68,15 +82,15 @@ public class RegisterActivity extends AppCompatActivity {
                     Cursor cursor2 = database.query("user", new String[]{"name"}, "name=?", new String[]{name}, null, null, null);
 
                     if (cursor.moveToFirst())
-                        Toast.makeText(RegisterActivity.this, "用户" + number + "已被注册！" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "用户" + number + "已被注册！", Toast.LENGTH_SHORT).show();
                     else {
                         if (cursor2.moveToFirst())
-                            Toast.makeText(RegisterActivity.this, "用户名" + name + "已被使用！" , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "用户名" + name + "已被使用！", Toast.LENGTH_SHORT).show();
                         else {
-                            database.execSQL("insert into user(number,name,password) values('" +  number + "','" + name + "','" + password + "');");
+                            database.execSQL("insert into user(number,name,password) values('" + number + "','" + name + "','" + password + "');");
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
-                            Toast.makeText(RegisterActivity.this,"注册成功！",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
@@ -87,5 +101,32 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //设置隐藏状态栏
+    public void fullScreen(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = activity.getWindow();
+                View decorView = window.getDecorView();
+                //两个 flag 要结合使用，表示让应用的主体内容占用系统状态栏的空间
+                int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+                decorView.setSystemUiVisibility(option);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                //设置状态栏为透明，否则在部分手机上会呈现系统默认的浅灰色
+                window.setStatusBarColor(Color.TRANSPARENT);
+                //导航栏颜色也可以考虑设置为透明色
+                //window.setNavigationBarColor(Color.TRANSPARENT);
+            } else {
+                Window window = activity.getWindow();
+                WindowManager.LayoutParams attributes = window.getAttributes();
+                int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+                attributes.flags |= flagTranslucentStatus;
+//                attributes.flags |= flagTranslucentNavigation;
+                window.setAttributes(attributes);
+            }
+        }
     }
 }

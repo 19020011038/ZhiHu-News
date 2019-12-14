@@ -1,30 +1,27 @@
 package com.example.zhihuribao.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.load.engine.Resource;
-import com.example.zhihuribao.Adapter.MainAdapter;
 import com.example.zhihuribao.MyDataBaseHelper;
 import com.example.zhihuribao.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,8 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NewsActivity extends AppCompatActivity {
     private WebView webView;
@@ -65,6 +60,7 @@ public class NewsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
+        fullScreen(NewsActivity.this);
         Bundle bundle = getIntent().getExtras();
         id_user = bundle.getString("id_user");
         id_news = bundle.getString("id_news");
@@ -215,6 +211,32 @@ public class NewsActivity extends AppCompatActivity {
             });
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+    //设置隐藏状态栏
+    public void fullScreen(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = activity.getWindow();
+                View decorView = window.getDecorView();
+                //两个 flag 要结合使用，表示让应用的主体内容占用系统状态栏的空间
+                int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+                decorView.setSystemUiVisibility(option);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                //设置状态栏为透明，否则在部分手机上会呈现系统默认的浅灰色
+                window.setStatusBarColor(Color.TRANSPARENT);
+                //导航栏颜色也可以考虑设置为透明色
+                //window.setNavigationBarColor(Color.TRANSPARENT);
+            } else {
+                Window window = activity.getWindow();
+                WindowManager.LayoutParams attributes = window.getAttributes();
+                int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+                attributes.flags |= flagTranslucentStatus;
+//                attributes.flags |= flagTranslucentNavigation;
+                window.setAttributes(attributes);
+            }
         }
     }
 }
