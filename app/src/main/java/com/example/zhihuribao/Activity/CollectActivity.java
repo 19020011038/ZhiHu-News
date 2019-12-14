@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.zhihuribao.Adapter.CollectAdapter;
 import com.example.zhihuribao.MyDataBaseHelper;
 import com.example.zhihuribao.R;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,10 @@ import java.util.Map;
 
 public class CollectActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private RefreshLayout refreshLayout;
+    private List<Map<String, Object>> list = new ArrayList<>();
+    private String id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +44,9 @@ public class CollectActivity extends AppCompatActivity {
         }
         fullScreen(CollectActivity.this);
         recyclerView = findViewById(R.id.recyclerView_collect);
+        refreshLayout = findViewById(R.id.refreshLayout_collect);
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id_user");
+        id = intent.getStringExtra("id_user");
         //返回user
         ImageView imageView = (ImageView)findViewById(R.id.back_collect_user);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +65,6 @@ public class CollectActivity extends AppCompatActivity {
         MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(CollectActivity.this);
         SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
         Cursor cursor = database.query("collect", new String[]{"id_user", "id_news","title_news","url_news"}, "id_user=?", new String[]{id}, null, null, null);
-        List<Map<String, Object>> list = new ArrayList<>();
         while (cursor.moveToNext()){
             String id_news = cursor.getString(cursor.getColumnIndex("id_news"));
             String title_news = cursor.getString(cursor.getColumnIndex("title_news"));
@@ -72,7 +78,32 @@ public class CollectActivity extends AppCompatActivity {
         cursor.close();
         database.close();
         recyclerView.setLayoutManager(new LinearLayoutManager(CollectActivity.this));//垂直排列 , Ctrl+P
-        recyclerView.setAdapter(new CollectAdapter(CollectActivity.this, list,id));//绑定适配器
+        recyclerView.setAdapter(new CollectAdapter(CollectActivity.this, list, id));//绑定适配器
+        //下拉刷新
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                list.clear();
+                MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(CollectActivity.this);
+                SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
+                Cursor cursor = database.query("collect", new String[]{"id_user", "id_news","title_news","url_news"}, "id_user=?", new String[]{id}, null, null, null);
+                while (cursor.moveToNext()){
+                    String id_news = cursor.getString(cursor.getColumnIndex("id_news"));
+                    String title_news = cursor.getString(cursor.getColumnIndex("title_news"));
+                    String url_news = cursor.getString(cursor.getColumnIndex("url_news"));
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id_news",id_news);
+                    map.put("title_news",title_news);
+                    map.put("url_news",url_news);
+                    list.add(map);
+                }
+                cursor.close();
+                database.close();
+                recyclerView.setLayoutManager(new LinearLayoutManager(CollectActivity.this));//垂直排列 , Ctrl+P
+                recyclerView.setAdapter(new CollectAdapter(CollectActivity.this, list, id));//绑定适配器
+                refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
+            }
+        });
     }
     //设置隐藏状态栏
     public void fullScreen(Activity activity) {

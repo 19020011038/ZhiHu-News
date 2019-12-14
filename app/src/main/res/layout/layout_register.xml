@@ -8,6 +8,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.4">
         <ImageView
+            android:layout_gravity="bottom"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/selector_back"

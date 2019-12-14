@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:orientation="vertical">
     <LinearLayout
@@ -10,6 +9,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.2" >
         <ImageView
+            android:layout_gravity="bottom"
             android:id="@+id/back_change_picture_user"
             android:layout_width="40dp"
             android:layout_height="40dp"
