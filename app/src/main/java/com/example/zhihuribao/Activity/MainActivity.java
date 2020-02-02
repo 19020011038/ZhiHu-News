@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
             actionBar.hide();
         }
         fullScreen(MainActivity.this);
-        url_1 = "http://news.at.zhihu.com/api/1.2/stories/before/";
+        url_1 = "http://news-at.zhihu.com/api/4/stories/before/";
         t = 0;
         Today = getOldDate(t);
         Log.d("yyxnb", Today);
@@ -449,12 +449,13 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         list.add(map1);
         try {
             JSONObject jsonObject = new JSONObject(string);
-            JSONArray jsonArray = jsonObject.getJSONArray("news");
+            JSONArray jsonArray = jsonObject.getJSONArray("stories");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 String title = jsonObject1.getString("title");
                 String hint = jsonObject1.getString("hint");
-                String image = jsonObject1.getString("image");
+                JSONArray images = jsonObject1.getJSONArray("images");
+                String image = images.get(0).toString();
                 String id_news = jsonObject1.getString("id");
 
 

@@ -67,7 +67,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     Toast.makeText(ChangePasswordActivity.this, "密码长度不小于6个字符！", Toast.LENGTH_SHORT).show();
                 else if (mGet_new_password.length() > 11)
                     Toast.makeText(ChangePasswordActivity.this, "密码长度不超过11个字符！", Toast.LENGTH_SHORT).show();
-                {
+                else {
                     MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(ChangePasswordActivity.this);
                     SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
                     Cursor cursor = database.query("user", new String[]{"id_user", "password"}, "id_user=?", new String[]{id}, null, null, null);

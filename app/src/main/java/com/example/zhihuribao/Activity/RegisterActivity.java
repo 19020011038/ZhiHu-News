@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,6 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
         mText_number = findViewById(R.id.get_tel);
         mText_name = findViewById(R.id.get_name);
         mText_password = findViewById(R.id.get_password);
+
+        //设置禁止用户名输入空格
+        setEditTextInhibitInputSpace(mText_name);
 
         ImageView imageView = (ImageView) findViewById(R.id.back_register_login);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +106,17 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public static void setEditTextInhibitInputSpace(EditText editText) {
+        InputFilter filter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                if (source.equals(" ") )return "";
+    else return null;
+            }
+        };
+        editText.setFilters(new InputFilter[]{filter});
     }
 
     //设置隐藏状态栏
