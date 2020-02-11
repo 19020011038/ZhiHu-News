@@ -39,11 +39,6 @@ public class ChangeNameActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = getIntent();
-                String id = intent.getStringExtra("id_user");
-                Intent intent1 = new Intent(ChangeNameActivity.this, UserActivity.class);
-                intent1.putExtra("id_user", id);
-                startActivity(intent1);
                 finish();
             }
         });
@@ -68,9 +63,6 @@ public class ChangeNameActivity extends AppCompatActivity {
                     values.put("name", new_name);//第一个"name" 是字段名字  第二个是对应字段的数据
                     database.update("user", values, "id_user=?", new String[]{id});
                     database.close();
-                    Intent intent1 = new Intent(ChangeNameActivity.this, UserActivity.class);
-                    intent1.putExtra("id_user", id);
-                    startActivity(intent1);
                     Toast.makeText(ChangeNameActivity.this, "用户名修改成功！", Toast.LENGTH_SHORT).show();
                     finish();
                 }

@@ -59,11 +59,7 @@ public class ChangePictureActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = getIntent();
-                String id = intent.getStringExtra("id_user");
-                Intent intent1 = new Intent(ChangePictureActivity.this, UserActivity.class);
-                intent1.putExtra("id_user",id);
-                startActivity(intent1);
+
                 finish();
             }
         });

@@ -1,7 +1,6 @@
 package com.example.zhihuribao.Activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -90,17 +89,7 @@ public class CommentsActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CommentsActivity.this, NewsActivity.class);
-                Bundle bundle1 = new Bundle();
-                bundle1.putString("comments", comments);
-                bundle1.putString("long_comments", long_comments);
-                bundle1.putString("short_comments", short_comments);
-                bundle1.putString("id_user", id_user);
-                bundle1.putString("id_news", id_news);
-                bundle1.putString("title_news", title_news);
-                bundle1.putString("url_news", url_news);
-                intent.putExtras(bundle1);
-                startActivity(intent);
+
                 finish();
             }
         });

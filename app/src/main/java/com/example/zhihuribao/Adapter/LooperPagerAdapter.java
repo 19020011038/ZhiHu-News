@@ -29,7 +29,11 @@ public class LooperPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         int realPosition;
-        realPosition = position % mPics.size();
+        int instance = mPics.size();
+        if (instance != 0)
+            realPosition = position % mPics.size();
+        else
+            realPosition = 1;
         ImageView imageView = new ImageView(container.getContext());
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         //imageView.setBackgroundColor(mPics.get(position));

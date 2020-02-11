@@ -91,9 +91,7 @@ public class NewsActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(NewsActivity.this, MainActivity.class);
-                intent.putExtra("id_user", id_user);
-                startActivity(intent);
+
                 finish();
             }
         });

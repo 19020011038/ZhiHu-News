@@ -75,7 +75,7 @@ public class UserActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(UserActivity.this, CollectActivity.class);
                 intent1.putExtra("id_user",id);
                 startActivity(intent1);
-                finish();
+
             }
         });
         //修改用户名
@@ -88,7 +88,7 @@ public class UserActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(UserActivity.this, ChangeNameActivity.class);
                 intent1.putExtra("id_user",id);
                 startActivity(intent1);
-                finish();
+
             }
         });
         //修改密码
@@ -101,7 +101,7 @@ public class UserActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(UserActivity.this, ChangePasswordActivity.class);
                 intent1.putExtra("id_user",id);
                 startActivity(intent1);
-                finish();
+
             }
         });
         //修改头像
@@ -114,9 +114,30 @@ public class UserActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(UserActivity.this, ChangePictureActivity.class);
                 intent1.putExtra("id_user",id);
                 startActivity(intent1);
-                finish();
+
             }
         });
+    }
+
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        //显示用户名
+        ShowName();
+        Intent intent = getIntent();
+        String id_user = intent.getStringExtra("id_user");
+        MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(UserActivity.this);
+        SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
+        Cursor cursor = database.query("user", new String[]{"picture", "id_user"}, "id_user=?", new String[]{id_user}, null, null, null);
+        if (cursor.moveToFirst()) {
+            byte[] blob = cursor.getBlob(cursor.getColumnIndex("picture"));//Ctrl+P
+            Bitmap bitmap = getBitmapFromByte(blob);
+            if (bitmap != null)
+                picture.setImageBitmap(bitmap);
+        }
+        cursor.close();//游标关闭!!!!
+        database.close();
     }
 
     public static Bitmap getBitmapFromByte(byte[] temp){   //将二进制转化为bitmap

@@ -61,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     private ViewPager mViewPager;
     private RecyclerView recyclerView;
     private String Today;
+    private String MM;
+    private String dd;
+    private int month;
+    private String m;
     private String Yesterday;
     private String Yesterday_1;
     private int Flag = 0;
@@ -96,6 +100,23 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         url_1 = "http://news-at.zhihu.com/api/4/stories/before/";
         t = 0;
         Today = getOldDate(t);
+        MM = getOldDate4(t);
+        switch(MM)
+        {
+            case "01":m = "一月";break;
+            case "02":m = "二月";break;
+            case "03":m = "三月";break;
+            case "04":m = "四月";break;
+            case "05":m = "五月";break;
+            case "06":m = "六月";break;
+            case "07":m = "七月";break;
+            case "08":m = "八月";break;
+            case "09":m = "九月";break;
+            case "10":m = "十月";break;
+            case "11":m = "十一月";break;
+            case "12":m = "十二月";break;
+        }
+        dd = getOldDate3(t);
         Log.d("yyxnb", Today);
         mHandler = new Handler();
 //        initView();
@@ -136,9 +157,11 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         TextPaint tp = tv.getPaint();
         tp.setFakeBoldText(true);
         TextView tv1 = (TextView) findViewById(R.id.day);
+        tv1.setText(dd);
         TextPaint tp1 = tv1.getPaint();
         tp1.setFakeBoldText(true);
         TextView tv2 = (TextView) findViewById(R.id.month);
+        tv2.setText(m);
         TextPaint tp2 = tv2.getPaint();
         tp2.setFakeBoldText(true);
 
@@ -152,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
                 Intent intent = new Intent(MainActivity.this, UserActivity.class);
                 intent.putExtra("id_user", id);
                 startActivity(intent);
-                finish();
+
             }
         });
 
@@ -163,6 +186,21 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
     protected void onResume() {
         super.onResume();
         sPics.clear();
+        //显示头像
+        Intent intent = getIntent();
+        String id_user = intent.getStringExtra("id_user");
+        MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(MainActivity.this);
+        SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
+        Cursor cursor = database.query("user", new String[]{"picture", "id_user"}, "id_user=?", new String[]{id_user}, null, null, null);
+        if (cursor.moveToFirst()) {
+            byte[] blob = cursor.getBlob(cursor.getColumnIndex("picture"));//Ctrl+P
+            Bitmap bitmap = getBitmapFromByte(blob);
+            if (bitmap != null)
+                picture.setImageBitmap(bitmap);
+        }
+        cursor.close();//游标关闭!!!!
+        database.close();
+
         //下面是联网部分
         //开启线程来发起网络请求
         new Thread(new Runnable() {
@@ -600,6 +638,35 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
 
     public static String getOldDate2(int distanceDay) {
         SimpleDateFormat dft = new SimpleDateFormat("yyyy年MM月dd日");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + distanceDay);
+        Date endDate = null;
+        try {
+            endDate = dft.parse(dft.format(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dft.format(endDate);
+    }
+
+    public static String getOldDate3(int distanceDay) {
+        SimpleDateFormat dft = new SimpleDateFormat("dd");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + distanceDay);
+        Date endDate = null;
+        try {
+            endDate = dft.parse(dft.format(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dft.format(endDate);
+    }
+    public static String getOldDate4(int distanceDay) {
+        SimpleDateFormat dft = new SimpleDateFormat("MM");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);

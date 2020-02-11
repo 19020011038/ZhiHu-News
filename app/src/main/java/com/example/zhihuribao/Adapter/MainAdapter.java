@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.zhihuribao.Activity.MainActivity;
 import com.example.zhihuribao.Activity.NewsActivity;
 import com.example.zhihuribao.R;
 
@@ -93,10 +92,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     bundle.putString("url_news", url_news);
                     intent.putExtras(bundle);
                     context.startActivity(intent);
-                    if (MainActivity.class.isInstance(context)) {
-                        MainActivity activity = (MainActivity) context;
-                        activity.finish();
-                    }
+//                    if (MainActivity.class.isInstance(context)) {
+//                        MainActivity activity = (MainActivity) context;
+//                        activity.finish();
+//                    }
                 }
             });
         }
