@@ -10,7 +10,7 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     public MyDataBaseHelper(@Nullable Context context) {
         //下面这个"database"是数据库的名字,version是版本号
-        super(context, "database", null, 27);
+        super(context, "database", null, 28);
     }
 
     @Override
@@ -20,6 +20,8 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(TABLE_USER);
         String TABLE_COLLECT = "create table collect(id_collect INTEGER PRIMARY KEY autoincrement,id_user text,id_news text,if_collect text,title_news text,url_news text);";
         sqLiteDatabase.execSQL(TABLE_COLLECT);
+        String TABLE_ZAN = "create table zan(id_zan INTEGER PRIMARY KEY autoincrement,id_user text,id_news text,if_zan text,title_news text,url_news text);";
+        sqLiteDatabase.execSQL(TABLE_ZAN);
     }
 
     @Override
@@ -27,6 +29,7 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
         //更新数据库版本时才会执行onUpgrade
         sqLiteDatabase.execSQL("drop table if exists user");
         sqLiteDatabase.execSQL("drop table if exists collect");
+        sqLiteDatabase.execSQL("drop table if exists zan");
         onCreate(sqLiteDatabase);
     }
 }

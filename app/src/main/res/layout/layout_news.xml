@@ -62,19 +62,21 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="4"
-                    android:src="@drawable/dianzan"/>
-                <TextView
-                    android:id="@+id/popular_number"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.5"
-                    android:text="33"
-                    android:layout_gravity="center"
-                    android:textColor="#000000"/>
+                    android:src="@drawable/dianzan"
+                    android:id="@+id/zan"/>
+<!--                <TextView-->
+<!--                    android:id="@+id/popular_number"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1.5"-->
+<!--                    android:text="33"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:textColor="#000000"/>-->
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/collect"

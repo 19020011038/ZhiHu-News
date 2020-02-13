@@ -8,7 +8,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.4">
         <ImageView
-            android:layout_gravity="bottom"
+            android:layout_gravity="center"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/selector_back"
@@ -74,7 +74,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:hint="    请输入您的用户名"
+            android:hint="    请输入您的用户名(5-10个字符)"
             android:id="@+id/get_name"
             android:paddingLeft="25dp"
             android:singleLine="true"
@@ -103,7 +103,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:hint="    请输入您的密码"
+            android:hint="    请输入您的密码(6-11个字符)"
             android:id="@+id/get_password"
             android:singleLine="true"
             android:digits="0123456789qwertyuiopasdfghjklzxcvbnm,.!@#$%^*()_+"

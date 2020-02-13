@@ -47,10 +47,11 @@ public class NewsActivity extends AppCompatActivity {
     private TextView comments_number;
     private TextView popular_number;
     private String comments;
-    private String popularity;
+//    private String popularity;
     private String long_comments;
     private String short_comments;
     private ImageView collect_picture;
+    private ImageView zan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +68,11 @@ public class NewsActivity extends AppCompatActivity {
         title_news = bundle.getString("title_news");
         url_news = bundle.getString("url_news");
         comments_number = findViewById(R.id.comments_number);
-        popular_number = findViewById(R.id.popular_number);
+//        popular_number = findViewById(R.id.popular_number);
         comments_all = findViewById(R.id.comments);
         collect = findViewById(R.id.collect);
         collect_picture = findViewById(R.id.collect_picture);
+        zan = findViewById(R.id.zan);
         url3 = "https://news-at.zhihu.com/api/3/story-extra/";
         //加载新闻内容
         NewsActivity.this.runOnUiThread(new Runnable() {
@@ -95,19 +97,52 @@ public class NewsActivity extends AppCompatActivity {
                 finish();
             }
         });
-        //初始化收藏图标
+        //初始化点赞图标
         MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(NewsActivity.this);
         SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
-        Cursor cursor = database.query("collect", new String[]{"id_user", "id_news", "id_collect"}, "id_user=?and id_news=?", new String[]{id_user, id_news}, null, null, null);
+        Cursor cursor = database.query("zan", new String[]{"id_user", "id_news", "id_zan"}, "id_user=?and id_news=?", new String[]{id_user, id_news}, null, null, null);
         if (cursor.moveToFirst()) {
+            zan.setImageResource(R.drawable.zan);
+            zan.invalidate();
+        } else {
+            zan.setImageResource(R.drawable.dianzan);
+            zan.invalidate();
+        }
+        cursor.close();
+        //初始化收藏图标
+        Cursor cursor2 = database.query("collect", new String[]{"id_user", "id_news", "id_collect"}, "id_user=?and id_news=?", new String[]{id_user, id_news}, null, null, null);
+        if (cursor2.moveToFirst()) {
             collect_picture.setImageResource(R.drawable.shoucang2);
             collect_picture.invalidate();
         } else {
             collect_picture.setImageResource(R.drawable.shoucang);
             collect_picture.invalidate();
         }
-        cursor.close();
+        cursor2.close();
         database.close();
+        //设置点赞图标的点击事件
+        zan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(NewsActivity.this);
+                SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
+                Cursor cursor = database.query("zan", new String[]{"id_user", "id_news", "id_zan"}, "id_user=?and id_news=?", new String[]{id_user, id_news}, null, null, null);
+                if (cursor.moveToFirst()) {
+                    String id_zan = cursor.getString(cursor.getColumnIndex("id_zan"));
+                    database.delete("zan", "id_zan=?", new String[]{id_zan});
+                    zan.setImageResource(R.drawable.dianzan);
+                    zan.invalidate();
+                    Toast.makeText(NewsActivity.this, "取消点赞", Toast.LENGTH_SHORT).show();
+                } else {
+                    database.execSQL("insert into zan(id_user,id_news,title_news,url_news) values('" + id_user + "','" + id_news + "','" + title_news + "','" + url_news + "');");
+                    zan.setImageResource(R.drawable.zan);
+                    zan.invalidate();
+                    Toast.makeText(NewsActivity.this, "点赞~", Toast.LENGTH_SHORT).show();
+                }
+                cursor.close();
+                database.close();
+            }
+        });
         //设置收藏图标的点击事件
         collect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,14 +215,14 @@ public class NewsActivity extends AppCompatActivity {
             comments = jsonObject.getString("comments");
             long_comments = jsonObject.getString("long_comments");
             short_comments = jsonObject.getString("short_comments");
-            popularity = jsonObject.getString("popularity");
+//            popularity = jsonObject.getString("popularity");
 
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     comments_number.setText(comments);
-                    popular_number.setText(popularity);
+//                    popular_number.setText(popularity);
                     //跳转到评论
                     comments_all.setOnClickListener(new View.OnClickListener() {
                         @Override
