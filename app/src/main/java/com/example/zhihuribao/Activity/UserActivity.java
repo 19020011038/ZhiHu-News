@@ -117,6 +117,16 @@ public class UserActivity extends AppCompatActivity {
 
             }
         });
+        //退出登录
+        TextView exit = (TextView)findViewById(R.id.exit);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(UserActivity.this,LoginActivity.class);
+                startActivity(intent1);
+                finish();
+            }
+        });
     }
 
 
