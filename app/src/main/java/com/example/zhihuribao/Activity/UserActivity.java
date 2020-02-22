@@ -21,15 +21,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.zhihuribao.MyDataBaseHelper;
 import com.example.zhihuribao.R;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class UserActivity extends AppCompatActivity {
     private TextView mText_name;
     private ImageView picture;
+    private List<Map<String, Object>> list = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_user);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar !=null){
+        if (actionBar != null) {
             actionBar.hide();
         }
         fullScreen(UserActivity.this);
@@ -38,8 +45,8 @@ public class UserActivity extends AppCompatActivity {
         ShowName();
         //显示头像
         picture = findViewById(R.id.picture_user);
-        Intent intent = getIntent();
-        String id_user = intent.getStringExtra("id_user");
+        final Intent intent = getIntent();
+        final String id_user = intent.getStringExtra("id_user");
         MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(UserActivity.this);
         SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
         Cursor cursor = database.query("user", new String[]{"picture", "id_user"}, "id_user=?", new String[]{id_user}, null, null, null);
@@ -53,76 +60,96 @@ public class UserActivity extends AppCompatActivity {
         database.close();
 
         //返回
-        ImageView back = (ImageView)findViewById(R.id.back_user_main);
+        ImageView back = (ImageView) findViewById(R.id.back_user_main);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = getIntent();
                 String id = intent.getStringExtra("id_user");
                 Intent intent1 = new Intent(UserActivity.this, MainActivity.class);
-                intent1.putExtra("id_user",id);
+                intent1.putExtra("id_user", id);
                 startActivity(intent1);
                 finish();
             }
         });
         //打开收藏夹
-        TextView collect = (TextView)findViewById(R.id.jump_user_collect);
+        TextView collect = (TextView) findViewById(R.id.jump_user_collect);
         collect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = getIntent();
-                String id = intent.getStringExtra("id_user");
-                Intent intent1 = new Intent(UserActivity.this, CollectActivity.class);
-                intent1.putExtra("id_user",id);
-                startActivity(intent1);
+                MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(UserActivity.this);
+                SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
+                Cursor cursor = database.query("collect", new String[]{"id_user", "id_news", "title_news", "url_news"}, "id_user=?", new String[]{id_user}, null, null, null);
+                while (cursor.moveToNext()) {
+                    String id_news = cursor.getString(cursor.getColumnIndex("id_news"));
+                    String title_news = cursor.getString(cursor.getColumnIndex("title_news"));
+                    String url_news = cursor.getString(cursor.getColumnIndex("url_news"));
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id_news", id_news);
+                    map.put("title_news", title_news);
+                    map.put("url_news", url_news);
+                    list.add(map);
+                }
+                cursor.close();
+                database.close();
+                if (list.size() != 0) {
+                    Intent intent = getIntent();
+                    String id = intent.getStringExtra("id_user");
+                    Intent intent1 = new Intent(UserActivity.this, CollectActivity.class);
+                    intent1.putExtra("id_user", id);
+                    startActivity(intent1);
+                }else {
+                    Intent intent1 = new Intent(UserActivity.this,NoneCollectActivity.class);
+                    startActivity(intent1);
 
+                }
             }
         });
         //修改用户名
-        TextView edit_name = (TextView)findViewById(R.id.jump_user_change_name);
+        TextView edit_name = (TextView) findViewById(R.id.jump_user_change_name);
         edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = getIntent();
                 String id = intent.getStringExtra("id_user");
                 Intent intent1 = new Intent(UserActivity.this, ChangeNameActivity.class);
-                intent1.putExtra("id_user",id);
+                intent1.putExtra("id_user", id);
                 startActivity(intent1);
 
             }
         });
         //修改密码
-        TextView edit_password = (TextView)findViewById(R.id.jump_user_change_password);
+        TextView edit_password = (TextView) findViewById(R.id.jump_user_change_password);
         edit_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = getIntent();
                 String id = intent.getStringExtra("id_user");
                 Intent intent1 = new Intent(UserActivity.this, ChangePasswordActivity.class);
-                intent1.putExtra("id_user",id);
+                intent1.putExtra("id_user", id);
                 startActivity(intent1);
 
             }
         });
         //修改头像
-        TextView edit_picture = (TextView)findViewById(R.id.jump_user_change_picture);
+        TextView edit_picture = (TextView) findViewById(R.id.jump_user_change_picture);
         edit_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = getIntent();
                 String id = intent.getStringExtra("id_user");
                 Intent intent1 = new Intent(UserActivity.this, ChangePictureActivity.class);
-                intent1.putExtra("id_user",id);
+                intent1.putExtra("id_user", id);
                 startActivity(intent1);
 
             }
         });
         //退出登录
-        TextView exit = (TextView)findViewById(R.id.exit);
+        TextView exit = (TextView) findViewById(R.id.exit);
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(UserActivity.this,LoginActivity.class);
+                Intent intent1 = new Intent(UserActivity.this, LoginActivity.class);
                 startActivity(intent1);
                 finish();
             }
@@ -131,7 +158,7 @@ public class UserActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         //显示用户名
         ShowName();
@@ -150,11 +177,11 @@ public class UserActivity extends AppCompatActivity {
         database.close();
     }
 
-    public static Bitmap getBitmapFromByte(byte[] temp){   //将二进制转化为bitmap
-        if(temp != null){
+    public static Bitmap getBitmapFromByte(byte[] temp) {   //将二进制转化为bitmap
+        if (temp != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(temp, 0, temp.length);
             return bitmap;
-        }else{
+        } else {
             return null;
         }
     }
@@ -176,6 +203,7 @@ public class UserActivity extends AppCompatActivity {
         cursor.close();//游标关闭!!!!
         database.close();
     }
+
     //设置隐藏状态栏
     public void fullScreen(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
