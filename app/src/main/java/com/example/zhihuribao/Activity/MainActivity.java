@@ -96,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         if (actionBar != null) {
             actionBar.hide();
         }
+        Intent intent = getIntent();
+        String id_user = intent.getStringExtra("id_user");
         fullScreen(MainActivity.this);
         url_1 = "http://news-at.zhihu.com/api/4/stories/before/";
         t = 0;
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         //就是找到这个viewPager控件
         mLoopPager = (MyViewPager) this.findViewById(R.id.looper_pager);
         //设置适配器
-        mLooperPagerAdapter = new LooperPagerAdapter();
+        mLooperPagerAdapter = new LooperPagerAdapter(MainActivity.this,id_user);
 //        mLooperPagerAdapter.setData(sPics);
 //        mLoopPager.setAdapter(mLooperPagerAdapter);
         mLoopPager.setOnViewPagerTouchListener(this);
@@ -137,8 +139,6 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         refreshLayout = findViewById(R.id.refreshLayout);
         //显示头像
         picture = findViewById(R.id.picture_main);
-        Intent intent = getIntent();
-        String id_user = intent.getStringExtra("id_user");
         MyDataBaseHelper dataBaseHelper = new MyDataBaseHelper(MainActivity.this);
         SQLiteDatabase database = dataBaseHelper.getReadableDatabase();
         Cursor cursor = database.query("user", new String[]{"picture", "id_user"}, "id_user=?", new String[]{id_user}, null, null, null);
@@ -281,7 +281,9 @@ public class MainActivity extends AppCompatActivity implements MyViewPager.OnVie
         //就是找到这个viewPager控件
         mLoopPager = (MyViewPager) this.findViewById(R.id.looper_pager);
         //设置适配器
-        mLooperPagerAdapter = new LooperPagerAdapter();
+        Intent intent = getIntent();
+        String id_user = intent.getStringExtra("id_user");
+        mLooperPagerAdapter = new LooperPagerAdapter(MainActivity.this,id_user);
         mLooperPagerAdapter.setData(sPics);
         mLoopPager.setAdapter(mLooperPagerAdapter);
         mLoopPager.setOnViewPagerTouchListener(this);
